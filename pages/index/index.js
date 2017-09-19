@@ -4,16 +4,39 @@ const app = getApp()
 
 Page({
   data: {
-    motto: 'Hello World',
+    report: {},
     userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
+    userOpenId: null,
+    hasReport: false,
+    hasUserInfo: false,    
+    canIUse: wx.canIUse('button.open-type.getUserInfo'),
   },
-  //事件处理函数
-  bindViewTap: function() {
-    wx.navigateTo({
-      url: '../logs/logs'
+
+  getReport: function(userInfo) {
+    report = {
+      point: 1
+    }
+    this.setReport(report);
+  },
+
+  setReport: function(report) {
+    this.setData({
+      report:report,
+      hasReport: true
     })
+  },
+
+  //事件处理函数
+  goEvaluate: function(event) {
+    wx.navigateTo({
+      url: '../evaluation/evaluation',
+    })
+  },
+  
+  onShow: function() {
+    if (app.globalData.userReport) {
+      this.setReport(app.globalData.userReport)
+    }
   },
   onLoad: function () {
     if (app.globalData.userInfo) {
@@ -42,13 +65,33 @@ Page({
         }
       })
     }
+
+    if (app.globalData.userOpenId) {
+      this.setData({
+        userOpenId: app.globalData.userOpenId
+      })
+    } else {
+      app.userOpenIdReadyCallback = res => {
+        this.setData({
+          userOpenId: app.globalData.userOpenId
+        })
+      }
+    }
   },
+
   getUserInfo: function(e) {
     console.log(e)
     app.globalData.userInfo = e.detail.userInfo
     this.setData({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
+    })
+  },
+
+  getUserReport: function(e) {
+    console.log(e)
+    this.setReport({
+      point: 2
     })
   }
 })

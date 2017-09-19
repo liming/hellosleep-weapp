@@ -1,13 +1,26 @@
 <!--index.wxml-->
 <view class="container">
-  <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
-  </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
-  </view>
+    <view class="usercard">
+      <view class="userinfo">
+        <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+        <text class="userinfo-nickname">{{userInfo.nickName}}, 您好</text>
+        <text>OpenID: {{userOpenId}}</text>
+      <!-- user avatar -->
+      </view>
+      <view class="userreport">
+        <block wx:if="{{hasReport}}">
+          <text class="subheader">您的评估结果: </text>
+          <view class="report-point">{{report.point}}</view>
+        </block>
+        <block wx:else>
+          <view class="nopoint">您还没有做过评估</view>
+        </block>
+      </view>
+    </view>
+    <view class="actions">
+      <button class="evaluate" type="primary" bindtap="goEvaluate">
+        <block wx:if="{{hasReport}}">重新评估</block>
+        <block wx:else>创建睡眠评估</block>
+      </button>
+    </view>
 </view>

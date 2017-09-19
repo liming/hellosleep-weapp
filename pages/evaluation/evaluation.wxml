@@ -1,0 +1,12 @@
+<!--pages/evaluation/evaluation.wxml-->
+<form bindsubmit="formSubmit">
+<radio-group name="radio-group" bindchange="radioChange">
+  <view class="radio" wx:for="{{items}}">
+    <radio value="{{item}}">{{item}}</radio>
+  </view>
+</radio-group>
+<view class="btn-area">
+  <button formType="submit">提交</button>
+</view>
+
+</form>

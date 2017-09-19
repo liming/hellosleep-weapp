@@ -3,6 +3,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 30rpx;
+  padding-bottom: 30rpx;
+  background-color: dimgrey;
+  color: white;
 }
 
 .userinfo-avatar {
@@ -12,10 +16,35 @@
   border-radius: 50%;
 }
 
-.userinfo-nickname {
-  color: #aaa;
+.userreport {
+  padding-top: 50rpx;
+  padding-bottom: 50rpx;
+  background-color: #ffffff;
+
 }
 
-.usermotto {
-  margin-top: 200px;
+.usercard {
+  /* height: 900rpx; */
+  width: 100%;
+  margin-top: 15rpx;
+  background-color: white;
+  text-align: center;
 }
+
+.report-point {
+  padding-top: 40rpx;
+  font-size: 60pt;
+}
+
+.nopoint {
+  padding-top: 40rpx;
+  font-size: 17pt;
+}
+
+.actions {
+  align-content: center;
+  padding-top: 20rpx;
+  margin-top: 20rpx;
+  width: 90%;
+}
+
