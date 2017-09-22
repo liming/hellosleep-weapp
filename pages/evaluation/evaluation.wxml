@@ -1,12 +1,36 @@
 <!--pages/evaluation/evaluation.wxml-->
-<form bindsubmit="formSubmit">
-<radio-group name="radio-group" bindchange="radioChange">
-  <view class="radio" wx:for="{{items}}">
-    <radio value="{{item}}">{{item}}</radio>
+<text wx:if="{{loading}}">Loading...</text>
+<block wx:else>
+<text>
+  {{question.text}}
+</text>
+<block wx:if="{{(question.type == 'radio') || (question.type == 'select')}}">
+  <button wx:for="{{question.data}}" wx:key="id" bindtap="onSelect" data-value="{{item.value}}">
+    {{item.text}}
+  </button>
+</block>
+<block wx:if="{{question.type == 'date'}}">
+  <view wx:if="{{question.options.type == 'time'}}">
+    <picker mode="time" value="{{value}}" bindchange="onDateChange">
+      <view class="picker">
+        {{value}}
+      </view>
+    </picker>
   </view>
-</radio-group>
-<view class="btn-area">
-  <button formType="submit">提交</button>
-</view>
-
-</form>
+  <view wx:else>
+    <picker mode="date" value="{{value}}" bindchange="onDateChange">
+      <view class="picker">
+        {{value}}
+      </view>
+    </picker>
+  </view>
+  <button type="primary" bindtap="onNext">下一步</button>
+</block>
+<block wx:if="{{question.type == 'range'}}">
+  <slider bindChange="onSlide" min="{{question.options.min}}" max="{{question.options.max}}" 
+    show-value value="{{question.options.start}}" bindchange="onSlide">
+  </slider>
+  <button type="primary" bindtap="onNext">下一步</button>
+</block>
+<button bindtap="onPrevious">上一步</button>
+</block>

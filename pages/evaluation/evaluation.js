@@ -1,20 +1,31 @@
 // pages/evaluation/evaluation.js
 const app = getApp()
-Page({
 
+Page({
   /**
    * 页面的初始数据
    */
   data: {
-    items: [10, 20, 30, 60, 80, 100],
- 
-  },
+    loading: true,
+    question: null,
+    value: null,
+   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    // const that = this;
+    // app.loadSurvey({
+    //   success: (survey) => {
+    //     that.survey = survey
+    //     survey.nextQuestion()
+    //     this.setData({
+    //       loading: false,
+    //       question: survey.currentQuestion
+    //     })
+    //   }
+    // })
   },
 
   /**
@@ -28,7 +39,25 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-  
+    const that = this;
+    if (app.globalData.survey) {
+      that.survey = app.globalData.survey
+      that.survey.previous()
+      that.setData({
+        loading: false,
+        question: that.survey.currentQuestion
+      })
+    } else {
+      app.loadSurvey({
+        success: (survey) => {
+          that.survey = survey
+          that.setData({
+            loading: false,
+            question: that.survey.currentQuestion
+          })
+        }
+      })
+    }
   },
 
   /**
@@ -65,22 +94,59 @@ Page({
   onShareAppMessage: function () {
   
   },
-  
 
-  radioChange: e => {
-    console.log(e.detail.value)
+  onSelect: function(e) {
+    this.setData({
+      value: e.target.dataset.value
+    })
+    this.answerAndNext()
   },
 
-  formSubmit: e => {
-    let point = e.detail.value['radio-group'];
-    app.globalData.userReport = {
-      point: point
-    }
-    console.log(point)
-    wx.navigateBack({
-      url: '../index/index'
-    })
-    
-  }
+  onDateChange: function (e) {
+    this.onValueChange(e)
+  },
 
+  onSlide: function(e) {
+    this.onValueChange(e)
+  },
+
+  onValueChange: function(e) {
+    this.setData({
+      value: e.detail.value
+    })
+  },
+
+  onNext: function(e) {
+    this.answerAndNext() 
+  },
+
+  onPrevious: function(e) {
+    let [g, q] = this.survey.previous()
+    if (q) {
+      this.setData({
+        question: q,
+        value: null
+      })
+    }
+  },
+
+  answerAndNext: function () {
+    this.survey.setAnswer(this.data.value)
+    this.goNext()
+  },
+
+  
+  goNext: function() {
+    let [g, q] = this.survey.next()
+    if (q) {
+      this.setData({
+        question: q,
+        value: null
+      })
+    } else {
+      wx.navigateTo({
+        url: '../submit/submit',
+      })
+    }
+  }
 })

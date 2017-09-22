@@ -1,0 +1,4 @@
+<!--pages/submit/submit.wxml-->
+<view wx:for="{{questions}}" wx:key="id">
+{{item.text}}: {{answers[item.name]}}
+</view>
