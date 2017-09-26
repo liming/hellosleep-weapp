@@ -7,9 +7,11 @@
       <!-- user avatar -->
       </view>
       <view class="userreport">
-        <block wx:if="{{user.point > 0}}">
+        <block wx:if="{{report}}">
           <text class="subheader">您的评估结果: </text>
-          <view class="report-point">{{user.point}}</view>
+          <view wx:for="{{report.tags}}" wx:key="id">
+            <label>{{item.text}}</label>
+          </view>
         </block>
         <block wx:else>
           <view class="nopoint">您还没有做过评估</view>
@@ -18,7 +20,7 @@
     </view>
     <view class="actions">
       <button class="evaluate" type="primary" bindtap="goEvaluate">
-        <block wx:if="{{user.point > 0}}">重新评估</block>
+        <block wx:if="{{report}}">重新评估</block>
         <block wx:else>创建睡眠评估</block>
       </button>
     </view>

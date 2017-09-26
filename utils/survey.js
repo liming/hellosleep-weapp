@@ -1,17 +1,27 @@
+import cal from 'calculation'
+
 export class Survey
 {
-  constructor(qdata) {
-    this.qdata = qdata;
-    this.reset()
+  constructor(meta) {
+    this.meta = meta;
     this.answers = {};
+
+    this.count = this.groups.map(group => group.data.length)
+                            .reduce((sum, n) => {return sum + n});
+    this.reset()
+  }
+
+  reset() {
+    this.trace = [];
+    this.currentQid = 1; 
   }
 
   get groups() {
-    return this.qdata.data
+    return this.meta.data
   }
 
   get current() {
-    return this.getQuestion(this.csr)
+    return this.getQuestion(this.currentQid)
   }
 
   get currentGroup() {
@@ -22,11 +32,6 @@ export class Survey
     return this.current[1] || null
   }
 
-  reset() {
-    this.answered = []
-    this.csr = [0, 0]
-  }
-
   setAnswer(answer) {
     this.answers[this.currentQuestion.name] = answer
   }
@@ -35,52 +40,60 @@ export class Survey
     return this.answers[question.name] || null
   }
 
-  getQuestion(idx) {
-    let [gIdx, qIdx] = idx
-    let group = this.groups[gIdx] || null
-    if (group) {
-      let question = group.data[qIdx] || null
-      return [group, question]
-    } else {
-      return [null, null]
-    }
-  }
+  getQuestion(id) {
+    if (id <= 0) return null
 
-  moveOn() {
-    if (!this.csr) return
-
-    let [gIdx, qIdx] = this.csr
-    let group = this.groups[gIdx]
-    if (qIdx == group.data.length - 1) {
-      if (gIdx == this.groups.length - 1) {
-        this.csr = null
-        return
+    let sum = 0;
+    for (let group of this.groups) {
+      let nextSum = sum + group.data.length
+      if (id <= nextSum) {
+        return [group, group.data[id - sum - 1]]
       }
-      gIdx += 1;
-      qIdx = 0;
-    } else {
-      qIdx += 1;
-    }
-    this.csr = [gIdx, qIdx]
-  }
-
-  next() {
-    this.answered.push(this.csr)
-    this.moveOn()
-    while (this.csr) {
-      const [g, q] = this.current
-      if (this.checkDependence(q)) {
-        return [g, q]
-      } else {
-        this.moveOn()
+      else {
+        sum = nextSum
       }
     }
-    return [null, null]
+
+    return null
   }
 
-  previous() {
-    this.csr = this.answered.pop() || [0, 0]
-    return this.current
+  goNext() {
+    console.log(this.currentQid)
+    console.log(this.count)
+    if (this.currentQid >= this.count) {
+      return false;
+    }
+
+    this.currentQid++;
+    return true;
+  }
+
+  goNextAvailable() {
+    console.log(this.currentQid)
+    this.trace.push(this.currentQid);
+    console.log(this.trace)
+    while (this.goNext()) {
+      if (this.checkDependence(this.currentQuestion)) {
+        console.log("goNextAvailabe: " + this.currentQid)
+        return true;
+      }
+    }
+    console.log("No more available questions")
+    return false;
+  }
+
+  goPreviousInTrace() {
+    let prevId = this.trace.pop() || null;
+    if (prevId && prevId == this.currentQid) {
+      prevId = this.trace.pop() || null;
+    }
+
+    if (prevId) {
+      this.currentQid = prevId;
+      return true
+    } else {
+      return false
+    }
   }
 
   checkDependence(question) {
@@ -88,5 +101,36 @@ export class Survey
 
     if (dep && (this.answers[dep.question] != dep.value)) return false
     return true
+  }
+
+  getQuestionsInTrace() {
+    return this.trace.map(id => this.getQuestion(id)[1])
+  }
+}
+
+export class Report
+{
+  constructor(survey) {
+    this.survey = survey
+    this.tags = []
+  }
+
+  calculateTags() {
+    for (const tag of this.survey.meta.tags) {
+      const func = tag.calc.func || null
+      if (func) {
+        const params = tag.calc.input.map(name => this.survey.answers[name])
+        console.log(cal)
+        if (cal[func](...params)) {
+          console.log(tag.text)
+          this.tags.push(tag)
+        }
+      } else {
+        if (this.survey.answers[tag.calc.question] == tag.value) {
+          console.log(tag.text)
+          this.tags.push(tag)
+        }
+      }
+    }
   }
 }

@@ -15,17 +15,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // const that = this;
-    // app.loadSurvey({
-    //   success: (survey) => {
-    //     that.survey = survey
-    //     survey.nextQuestion()
-    //     this.setData({
-    //       loading: false,
-    //       question: survey.currentQuestion
-    //     })
-    //   }
-    // })
+    app.getSurvey({
+      success: (survey) => {
+        this.survey = survey
+        this.setCurrentQuestion()
+      }
+    })
   },
 
   /**
@@ -39,25 +34,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    const that = this;
-    if (app.globalData.survey) {
-      that.survey = app.globalData.survey
-      that.survey.previous()
-      that.setData({
-        loading: false,
-        question: that.survey.currentQuestion
-      })
-    } else {
-      app.loadSurvey({
-        success: (survey) => {
-          that.survey = survey
-          that.setData({
-            loading: false,
-            question: that.survey.currentQuestion
-          })
-        }
-      })
-    }
   },
 
   /**
@@ -121,12 +97,8 @@ Page({
   },
 
   onPrevious: function(e) {
-    let [g, q] = this.survey.previous()
-    if (q) {
-      this.setData({
-        question: q,
-        value: null
-      })
+    if (this.survey.goPreviousInTrace()) {
+      this.setCurrentQuestion()
     }
   },
 
@@ -137,16 +109,20 @@ Page({
 
   
   goNext: function() {
-    let [g, q] = this.survey.next()
-    if (q) {
-      this.setData({
-        question: q,
-        value: null
-      })
+    if (this.survey.goNextAvailable()) {
+      this.setCurrentQuestion()
     } else {
       wx.navigateTo({
         url: '../submit/submit',
       })
     }
+  },
+
+  setCurrentQuestion: function() {
+    this.setData({
+      question: this.survey.currentQuestion,
+      value: null,
+      loading: false
+    })
   }
 })

@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/evaluation/evaluation",
     "pages/submit/submit",
+    "pages/report/report",
     "pages/logs/logs"
   ],
   "window":{

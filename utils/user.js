@@ -9,37 +9,43 @@ class User {
   }
 }
 
-function saveUser(user) {
-  wx.setStorageSync('hsUser', user);
-}
-
-function loadUser(success, fail) {
+export function getUser(cb) {
+  const success = cb.success,
+        fail = cb.fail;
   let user = wx.getStorageSync('hsUser', )
-  if (user && success) {
-      success(user)
+  if (user) {
+    typeof success == 'function' && success(user) 
   } else {
     wx.getSetting({
       success: res => {
-        if (res.authSetting['scope.userInfo']) {
+        if (!res.authSetting['scope.userInfo']) {
+          wx.authorize({
+            scope: 'scope.userInfo',
+            success() {
+              wx.getUserInfo({
+                success: res => {
+                  let user = new User()
+                  user.info = res.userInfo;
+                  user.point = 0;
+                  wx.setStorageSync('hsUser', user)
+                  typeof success == 'function' && success(user)
+                }
+              })
+            }
+          })
+        } else {
           wx.getUserInfo({
             success: res => {
               let user = new User()
               user.info = res.userInfo;
               user.point = 0;
               wx.setStorageSync('hsUser', user)
-              if (success) {
-                success(user)
-              }
-              saveUser();
+              typeof success == 'function' && success(user)
             }
           })
         }
       },
-      fail: res => {
-        if (fail) {
-          fail(res)
-        }
-      }
+      fail: res => { console.log("fail"); typeof fail == 'function' && fail(res) }
     })
 
   }
@@ -48,6 +54,5 @@ function loadUser(success, fail) {
 
 module.exports = {
   User: User,
-  loadUser: loadUser,
-  saveUser: saveUser
+  getUser: getUser
 };

@@ -1,38 +1,43 @@
-// pages/submit/submit.js
+import {Report} from '../../utils/survey'
+
 const app = getApp()
+// pages/report/report.js
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    questions: null,
-    answers: null
+    tags: []
+  
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    let survey = app.globalData.survey
+    const survey = app.globalData.survey
     if (survey) {
+      let report = new Report(app.globalData.survey)
+      report.calculateTags()
+      app.globalData.report = report
       this.setData({
-        questions: survey.getQuestionsInTrace(),
-        answers: survey.answers,
+        tags: report.tags
       })
     }
   },
+
+  goIndex: function(){
+    wx.navigateBack({
+      delta: 3
+    })
+  },
+
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
   
-  },
-
-  onSubmit: function () {
-    wx.navigateTo({
-      url: '../report/report',
-    })
   },
 
   /**

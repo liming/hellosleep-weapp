@@ -1,0 +1,5 @@
+<!--pages/report/report.wxml-->
+<view wx:for="{{tags}}" wx:key="id"> 
+  <label>{{item.text}}</label>
+</view>
+<button type='primary' bindtap='goIndex'>返回</button>

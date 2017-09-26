@@ -4,9 +4,8 @@ const app = getApp()
 
 Page({
   data: {
-    user: null, 
-    hasUser: false,    
-    canIUse: wx.canIUse('button.open-type.getUserInfo'),
+    user: null,
+    report: null,
   },
 
   goEvaluate: function(event) {
@@ -15,28 +14,20 @@ Page({
     })
   },
   
-  onShow: function() {
-    this.loadUser()
-  },
-  onLoad: function () {
-    this.loadUser()
+  onLoad: function() {
+    app.getUser({
+      success: (user) => {
+        this.setData({user: user})
+      }
+    })
   },
 
-  loadUser: function() {
-    let that = this
-    if (app.globalData.user) {
-      this.setData({
-        user: app.globalData.user,
-        hasUser: true
-      })
-    } else if (this.data.canIUse) {
-      app.userReadyCallback = function(user) {
-        that.setData({
-          user: app.globalData.user,
-          hasUser: true
-        })
+  onShow: function() {
+    app.getReport({
+      success: (report) => {
+        this.setData({report: report})
       }
-      console.log("userReadyCallback set")
-    }
+    })
   }
+
 })
