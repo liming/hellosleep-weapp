@@ -25,7 +25,7 @@ export const testData = {
           "options": {
             "type": "date",
             "start": "year",
-            "initialDate": "1990"
+            "initialDate": "1990-01"
           }
         },
         {

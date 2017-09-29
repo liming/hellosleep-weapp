@@ -1,12 +1,19 @@
-class User {
+export class User {
   constructor() {
     this.info = {}
-    this.point = 0;
   }
+}
 
-  setPoint(point) {
-    this.point = point;
-  }
+function getUserInfo(success) {
+  wx.getUserInfo({
+    success: res => {
+      let user = new User()
+      user.info = res.userInfo;
+      user.point = 0;
+      wx.setStorageSync('hsUser', user)
+      typeof success == 'function' && success(user)
+    }
+  })
 }
 
 export function getUser(cb) {
@@ -22,37 +29,16 @@ export function getUser(cb) {
           wx.authorize({
             scope: 'scope.userInfo',
             success() {
-              wx.getUserInfo({
-                success: res => {
-                  let user = new User()
-                  user.info = res.userInfo;
-                  user.point = 0;
-                  wx.setStorageSync('hsUser', user)
-                  typeof success == 'function' && success(user)
-                }
-              })
+              getUserInfo(success)
             }
           })
         } else {
-          wx.getUserInfo({
-            success: res => {
-              let user = new User()
-              user.info = res.userInfo;
-              user.point = 0;
-              wx.setStorageSync('hsUser', user)
-              typeof success == 'function' && success(user)
-            }
-          })
+          getUserInfo(success)
         }
       },
-      fail: res => { console.log("fail"); typeof fail == 'function' && fail(res) }
+      fail: res => { typeof fail == 'function' && fail(res) }
     })
 
   }
 
 }
-
-module.exports = {
-  User: User,
-  getUser: getUser
-};

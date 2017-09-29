@@ -1,1 +1,48 @@
 /* pages/evaluation/evaluation.wxss */
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.title {
+  background-color: white;
+  font-size: 16pt;
+  margin: 2rpx;
+  padding: 5rpx;
+}
+
+.option {
+  border-color: #888;
+  font-size: 17pt;
+  margin: 1rpx auto 1rpx auto;
+  text-align: center;
+  color: #000;
+  width: 100%;
+  height: 94rpx;
+}
+
+.qmain {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.qactions {
+  display: flex;
+  flex-direction:column;
+}
+
+.navi-btn { 
+  margin: 10rpx;
+  width: 100%;
+}
+

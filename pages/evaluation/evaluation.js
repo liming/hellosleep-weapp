@@ -18,6 +18,7 @@ Page({
     app.getSurvey({
       success: (survey) => {
         this.survey = survey
+        survey.reset()
         this.setCurrentQuestion()
       }
     })
@@ -118,10 +119,27 @@ Page({
     }
   },
 
+  getDefaultValue(question) {
+    const qtype = question.type,
+          options = question.options
+    if (qtype == 'date') {
+      if (options && options.type == 'date') {
+        return options.initialDate || '1990-01'
+      }
+      else if (options && options.type == 'time') {
+        return options.initialTime || '08:00'
+      }
+    }
+
+    return null;
+  
+  },
+
   setCurrentQuestion: function() {
+    const currentQuestion = this.survey.currentQuestion
     this.setData({
-      question: this.survey.currentQuestion,
-      value: null,
+      question: currentQuestion,
+      value: this.getDefaultValue(currentQuestion),
       loading: false
     })
   }

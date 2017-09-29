@@ -1,36 +1,56 @@
 <!--pages/evaluation/evaluation.wxml-->
-<text wx:if="{{loading}}">Loading...</text>
-<block wx:else>
-<text>
-  {{question.text}}
-</text>
-<block wx:if="{{(question.type == 'radio') || (question.type == 'select')}}">
-  <button wx:for="{{question.data}}" wx:key="id" bindtap="onSelect" data-value="{{item.value}}">
-    {{item.text}}
-  </button>
-</block>
-<block wx:if="{{question.type == 'date'}}">
-  <view wx:if="{{question.options.type == 'time'}}">
-    <picker mode="time" value="{{value}}" bindchange="onDateChange">
-      <view class="picker">
-        {{value}}
+<view class="container">
+  <loading hidden="{{!loading}}">加载中...</loading>
+
+  <view class="main-box main-content">
+    <view class="title">{{question.text}}</view>
+    <block wx:if="{{question.name == 'birthday'}}">
+      <view class="weui-cells__title">基本信息</view>
+      <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">{{question.text}}</view>
+          </view>
+          <view class="weui-cell__bd">
+            <picker mode="date" value="{{value}}" fields="month" bindchange="onDateChange">
+              <view class="weui-input">{{value}}</view>
+            </picker>
+          </view>
+        </view>
       </view>
-    </picker>
-  </view>
-  <view wx:else>
-    <picker mode="date" value="{{value}}" bindchange="onDateChange">
-      <view class="picker">
-        {{value}}
+    </block>
+    <block wx:elif="{{(question.type == 'radio') || (question.type == 'select')}}">
+      <view class="weui-cells">
+        <view class="weui-cell" wx:for="{{question.data}}" wx:key="id" bindtap="onSelect" data-value="{{item.value}}">
+          <view class="weui-cell__bd">{{item.text}}</view>
+        </view>
       </view>
-    </picker>
+    </block>
+    <block wx:elif="{{question.type == 'date'}}">
+      <view wx:if="{{question.options.type == 'time'}}">
+        <picker mode="time" value="{{value}}" bindchange="onDateChange">
+          <view class="picker">
+            {{value}}
+          </view>
+        </picker>
+      </view>
+      <view wx:else>
+        <picker mode="date" value="{{value}}" fields="month" bindchange="onDateChange">
+          <view class="picker">
+            {{value}}
+          </view>
+        </picker>
+      </view>
+    </block>
+    <block wx:elif="{{question.type == 'range'}}">
+      <slider bindChange="onSlide" min="{{question.options.min}}" max="{{question.options.max}}" show-value value="{{question.options.start}}" bindchange="onSlide">
+      </slider>
+    </block>
   </view>
-  <button type="primary" bindtap="onNext">下一步</button>
-</block>
-<block wx:if="{{question.type == 'range'}}">
-  <slider bindChange="onSlide" min="{{question.options.min}}" max="{{question.options.max}}" 
-    show-value value="{{question.options.start}}" bindchange="onSlide">
-  </slider>
-  <button type="primary" bindtap="onNext">下一步</button>
-</block>
-<button bindtap="onPrevious">上一步</button>
-</block>
+  <view class="bottom-box">
+    <view class="actions">
+      <button type="primary" class="weui-btn navi-btn" bindtap="onNext">下一步</button>
+      <button class="weui-btn navi-btn" bindtap="onPrevious">上一步</button>
+    </view>
+  </view>
+</view>

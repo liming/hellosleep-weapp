@@ -1,50 +1,48 @@
 /**index.wxss**/
-.userinfo {
+
+.main-content {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 30rpx;
-  padding-bottom: 30rpx;
+}
+
+.user-info {
+  width: 100%;
+  flex: 0 0 300rpx;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   background-color: dimgrey;
+  font-size: 10pt;
   color: white;
 }
 
-.userinfo-avatar {
+.user-report {
+  width: 100%;
+  flex: 1 1 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center;
+
+  font-size: 16pt;
+
+}
+
+.user-info-avatar {
   width: 128rpx;
   height: 128rpx;
-  margin: 20rpx;
+  margin-bottom: 20rpx;
   border-radius: 50%;
 }
 
-.userreport {
-  padding-top: 50rpx;
-  padding-bottom: 50rpx;
-  background-color: #ffffff;
-
-}
-
-.usercard {
-  /* height: 900rpx; */
+.evaluate {
   width: 100%;
-  margin-top: 15rpx;
-  background-color: white;
-  text-align: center;
-}
-
-.report-point {
-  padding-top: 40rpx;
-  font-size: 60pt;
-}
-
-.nopoint {
-  padding-top: 40rpx;
-  font-size: 17pt;
-}
-
-.actions {
-  align-content: center;
-  padding-top: 20rpx;
-  margin-top: 20rpx;
-  width: 90%;
 }
 

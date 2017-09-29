@@ -1,6 +1,6 @@
 // import {User, loadUser, saveUser} from 'utils/user'
 import {getUser} from 'utils/user'
-import {Survey, Report} from 'utils/survey'
+import {getSurvey} from 'utils/survey'
 import {dumb} from 'utils/util'
 import * as hs from 'utils/hellosleep'
 
@@ -20,13 +20,10 @@ App({
           fail = cb.fail
 
     if (this.globalData.user) {
-      console.log("Found user")
       typeof success == 'function' && success(this.globalData.user)
     } else {
-      console.log("request user")
       getUser({
         success: (user) => {
-          console.log("Got User")
           this.globalData.user = user
           typeof success == 'function' && success(user)
         },
@@ -39,16 +36,18 @@ App({
   }, 
   
   getSurvey: function(cb) {
+    const success = cb.success,
+          fail = cb.fail
+
     if (this.globalData.survey) {
-      typeof cb.success == 'function' && cb.success(this.globalData.survey)
+      typeof success == 'function' && success(this.globalData.survey)
     } else {
-      hs.getEvaluationData({
-        success: (evalData) => {
-          let survey = new Survey(evalData)
-          this.globalData.survey = survey
-          typeof cb.success == 'function' && cb.success(survey)
+      getSurvey({
+        success: survey => { 
+          this.globalData.survey = survey;
+          typeof success == 'function' && success(survey) 
         },
-        fail: () => { fail() }
+        fail: (err) => {typeof fail == 'function' && fail(err)}
       })
     }
   },

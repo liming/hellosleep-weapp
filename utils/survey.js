@@ -1,4 +1,5 @@
 import cal from 'calculation'
+import * as hs from 'hellosleep'
 
 export class Survey
 {
@@ -58,8 +59,6 @@ export class Survey
   }
 
   goNext() {
-    console.log(this.currentQid)
-    console.log(this.count)
     if (this.currentQid >= this.count) {
       return false;
     }
@@ -69,16 +68,12 @@ export class Survey
   }
 
   goNextAvailable() {
-    console.log(this.currentQid)
     this.trace.push(this.currentQid);
-    console.log(this.trace)
     while (this.goNext()) {
       if (this.checkDependence(this.currentQuestion)) {
-        console.log("goNextAvailabe: " + this.currentQid)
         return true;
       }
     }
-    console.log("No more available questions")
     return false;
   }
 
@@ -116,21 +111,31 @@ export class Report
   }
 
   calculateTags() {
+    this.tags = []
     for (const tag of this.survey.meta.tags) {
       const func = tag.calc.func || null
       if (func) {
         const params = tag.calc.input.map(name => this.survey.answers[name])
-        console.log(cal)
         if (cal[func](...params)) {
-          console.log(tag.text)
           this.tags.push(tag)
         }
       } else {
-        if (this.survey.answers[tag.calc.question] == tag.value) {
-          console.log(tag.text)
+        if (this.survey.answers[tag.calc.question] == tag.calc.value) {
           this.tags.push(tag)
         }
       }
     }
   }
+}
+
+export function getSurvey(cb) {
+  const success = cb.success,
+        fail = cb.fail
+  hs.getEvaluationData({
+    success: (evalData) => {
+      let survey = new Survey(evalData)
+      typeof success == 'function' && success(survey)
+    },
+    fail: (err) => { typeof fail == 'function' && fail(err) }
+  })
 }

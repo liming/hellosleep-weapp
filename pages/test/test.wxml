@@ -1,0 +1,16 @@
+<!--pages/test/test.wxml-->
+<view class="t-container">
+  <view class="t-top">
+    <text>TOP-AREA</text>
+  </view>
+  <view class="t-main">
+    <text>{{range.length}}</text>
+    <view>
+      <textarea>Hello</textarea>
+    </view>
+    <view wx:for="{{range}}" wx:key="id">MAIN-AREA: {{item}}</view>
+  </view>
+</view>
+  <view class="t-bottom">
+    <text>BOTTOM-AREA</text>
+  </view>
