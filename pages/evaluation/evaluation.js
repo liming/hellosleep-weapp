@@ -8,7 +8,9 @@ Page({
   data: {
     loading: true,
     question: null,
+    group: null,
     value: null,
+    selectRange: null,
    },
 
   /**
@@ -18,6 +20,7 @@ Page({
     app.getSurvey({
       success: (survey) => {
         this.survey = survey
+        this.qest = survey.question
         survey.reset()
         this.setCurrentQuestion()
       }
@@ -93,6 +96,7 @@ Page({
     })
   },
 
+
   onNext: function(e) {
     this.answerAndNext() 
   },
@@ -135,11 +139,17 @@ Page({
   
   },
 
+  radioChange: function(e) {
+    console.log("radioChange")
+    console.log(e);
+  },
   setCurrentQuestion: function() {
-    const currentQuestion = this.survey.currentQuestion
+    const [group, question] = this.survey.current
     this.setData({
-      question: currentQuestion,
-      value: this.getDefaultValue(currentQuestion),
+      group: group,
+      question: question,
+      value: this.getDefaultValue(question),
+      range: question.data && question.data.map(item => item.text),
       loading: false
     })
   }

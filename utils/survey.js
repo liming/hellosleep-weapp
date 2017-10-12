@@ -5,101 +5,69 @@ export class Survey
 {
   constructor(meta) {
     this.meta = meta;
+    this.qmap = {};
+    this.qlist = [];
     this.answers = {};
+    this.availables = new Set();
+    console.log(this.availables)
 
-    this.count = this.groups.map(group => group.data.length)
-                            .reduce((sum, n) => {return sum + n});
-    this.reset()
+    let idx = 0;
+    for (let group of this.meta.data) {
+      for (let question of group.data) {
+        this.qmap[question.name] = {group, question};
+        this.qlist[idx] = question.name;
+        idx++;
+      }
+    }
+    this.qcount = idx;
+    this.buildAvailables();
   }
-
-  reset() {
-    this.trace = [];
-    this.currentQid = 1; 
-  }
-
+  
   get groups() {
-    return this.meta.data
+    return this.meta.data;
   }
 
-  get current() {
-    return this.getQuestion(this.currentQid)
-  }
-
-  get currentGroup() {
-    return this.current[0] || null
-  }
-
-  get currentQuestion() {
-    return this.current[1] || null
-  }
-
-  setAnswer(answer) {
-    this.answers[this.currentQuestion.name] = answer
-  }
-
-  getAnswer(question) {
-    return this.answers[question.name] || null
-  }
-
-  getQuestion(id) {
-    if (id <= 0) return null
-
-    let sum = 0;
-    for (let group of this.groups) {
-      let nextSum = sum + group.data.length
-      if (id <= nextSum) {
-        return [group, group.data[id - sum - 1]]
-      }
-      else {
-        sum = nextSum
+  buildAvailables() {
+    for (let g of this.meta.data) {
+      for (let q of g.data) {
+        let dep = q.depends || null;
+        let valid = (!dep || (this.availables.has(dep.question) && this.answers[dep.question] == dep.value))
+        if (valid) {
+          this.availables.add(q.name);
+        } else {
+          this.availables.delete(q.name)
+        }
       }
     }
-
-    return null
   }
 
-  goNext() {
-    if (this.currentQid >= this.count) {
-      return false;
-    }
+  setAnswer(name, answer) {
+    this.answers[name] = answer
+    this.buildAvailables()
+  }
 
-    this.currentQid++;
+  getAnswer(name) {
+    return this.answers[name]|| null
+  }
+
+  getQuestionByIndex(idx) {
+    return this.qmap[this.qlist[idx]]
+  }
+
+  getQuestionByName(name) {
+    return this.qmap[name]
+  }
+
+  canEvaluate() {
+    for (let ent of this.availables.entries()) {
+      if (this.answers[ent[0]] === undefined) {
+        console.log(ent[0])
+        console.log(false)
+        return false;
+      }
+    }
+    console.log(true)
     return true;
-  }
-
-  goNextAvailable() {
-    this.trace.push(this.currentQid);
-    while (this.goNext()) {
-      if (this.checkDependence(this.currentQuestion)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  goPreviousInTrace() {
-    let prevId = this.trace.pop() || null;
-    if (prevId && prevId == this.currentQid) {
-      prevId = this.trace.pop() || null;
-    }
-
-    if (prevId) {
-      this.currentQid = prevId;
-      return true
-    } else {
-      return false
-    }
-  }
-
-  checkDependence(question) {
-    let dep = question.depends || null;
-
-    if (dep && (this.answers[dep.question] != dep.value)) return false
-    return true
-  }
-
-  getQuestionsInTrace() {
-    return this.trace.map(id => this.getQuestion(id)[1])
   }
 }
 

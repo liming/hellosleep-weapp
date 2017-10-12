@@ -1,0 +1,154 @@
+<!--pages/evaluate/evaluate.wxml-->
+<wxs module="self">
+  var getTemplate4Single = function(q) {
+    return {
+      radio: 'singleSelect',
+      select: 'singleSelect',
+      date: 'singleDate',
+      text: 'singleText',
+      email: 'singleText'
+    }[q.type];
+  }
+
+  var getTemplate4Multiple = function(q) {
+    var type = q.type;
+    if (type == 'date' && q.options.type == 'time') {
+      type = 'time'
+    }
+    return {
+      radio: 'multipleSelect',
+      select: 'multipleSelect',
+      date: 'multipleDate',
+      time: 'multipleTime',
+      text: 'multipleText',
+      email: 'multipleText',
+      range: 'multipleRange'
+    }[type];
+  }
+
+  var getOptionText = function(options, value) {
+    var option = options.filter(function(opt) {
+      return opt.value == value
+    })[0]
+    if (option) {
+      return option.text
+    }
+  }
+
+  var stringOf = function(obj) {
+    return JSON.stringify(obj)
+  }
+
+  var isQuestionAvailable = function(availables, qname) {
+    return (availables.indexOf(qname) >= 0)
+  }
+
+  module.exports = {
+    getTemplate4Single: getTemplate4Single,
+    getTemplate4Multiple: getTemplate4Multiple,
+    getOptionText: getOptionText,
+    isQuestionAvailable: isQuestionAvailable,
+    stringOf: stringOf
+  }
+</wxs>
+
+<template name="singleSelect">
+  <view class="weui-cell weui-cell_input">
+    <view class="weui-cell__hd">
+      <view class="weui-label">{{text}}</view>
+    </view>
+    <view class="weui-cell__bd">
+      <picker range="{{data}}" range-key="text" value="{{value}}" data-name="{{name}}" data-options="{{data}}" bindchange='onSelectChange'>
+        <view class="weui-input">{{self.getOptionText(data, value)}}</view>
+      </picker>
+    </view>
+  </view>
+</template>
+
+<template name="singleDate">
+  <view class="weui-cell weui-cell_input">
+    <view class="weui-cell__hd">
+      <view class="weui-label">{{text}}</view>
+    </view>
+    <view class="weui-cell__bd">
+      <picker mode="date" value="1980-01-01" data-name="{{name}}" bindchange='onValueChange'>
+        <view class="weui-input">{{value}}</view>
+      </picker>
+    </view>
+  </view>
+</template>
+
+<template name="singleText">
+  <view class="weui-cell weui-cell_input">
+    <view class="weui-cell_hd">
+      <view class="weui-label">{{text}}</view>
+    </view>
+  </view>
+</template>
+
+
+<template name="multipleSelect">
+  <view class="weui-cells">
+    <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
+      <view class="weui-cell__bd">{{text}}</view>
+      <view class="weui-cell__ft">{{self.getOptionText(data, value)}} {{options.unit}}</view>
+    </view>
+    <radio-group bindchange="onValueChange" data-name="{{name}}" hidden="{{!(value == undefined || showOptions[name])}}">
+      <label class="weui-cell weui-check__label" wx:for="{{data}}" wx:key="id">
+        <radio value="{{item.value}}" checked="{{value == item.value}}" />
+        <view class="weui-cell__bd">{{item.text}}</view>
+      </label>
+    </radio-group>
+  </view>
+</template>
+
+<template name="multipleTime">
+  <view class="weui-cells">
+    <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
+      <view class="weui-cell__bd">{{text}}</view>
+      <view class="weui-cell__ft">{{value}}</view>
+    </view>
+    <view class="weui-cell" hidden="{{!(value == undefined || showOptions[name])}}">
+      <view class="weui-cell__bd">
+        <picker mode="time" value="{{value}}" data-name="{{name}}" bindchange='onValueChange'>
+          <view class="weui-input">{{value}}</view>
+        </picker>
+      </view>
+    </view>
+  </view>
+</template>
+
+<template name="multipleRange">
+  <view class="weui-cells">
+    <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
+      <view class="weui-cell__bd">{{text}}</view>
+      <view class="weui-cell__ft">{{value}} {{options.unit}}</view>
+    </view>
+    <view class="weui-cell" hidden="{{!(value == undefined || showOptions[name])}}">
+      <view class="weui-cell__bd">
+        <slider bindchange="onValueChange" data-name="{{name}}" min="{{options.min}}" max="{{options.max}}" show-value='true' value="{{value}}"></slider>
+      </view>
+    </view>
+  </view>
+</template>
+
+<template name="single">
+  <view class="weui-cells__title">{{group.text}}</view>
+  <view class="weui-cells weui-cells_after-title">
+    <template wx:for="{{group.data}}" wx:key="id" is="{{self.getTemplate4Single(item)}}" data="{{...item, value: answers[item.name]}}" />
+  </view>
+</template>
+
+<template name="multiple">
+  <view class="weui-cells__title">{{group.text}}</view>
+  <template wx:for="{{group.data}}" wx:key="id" is="{{self.getTemplate4Multiple(item)}}" data="{{...item, showOptions, value: answers[item.name]}}" wx:if="{{self.isQuestionAvailable(availables, item.name)}}" />
+</template>
+
+<view class="_container">
+  <block wx:for="{{groups}}" wx:key="id">
+    <template is="{{item.page}}" data="{{group:item, answers, availables, showOptions}}" />
+  </block>
+  <view class="fixed-bottom-area">
+    <button class="weui-btn action-btn" type="primary" bindtap="onSubmit" disabled='{{!canEvaluate}}'>提交</button>
+  </view>
+</view>

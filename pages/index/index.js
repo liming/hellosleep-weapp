@@ -10,7 +10,7 @@ Page({
 
   goEvaluate: function(event) {
     wx.navigateTo({
-      url: '../evaluation/evaluation',
+      url: '../evaluate/evaluate',
     })
   },
   
