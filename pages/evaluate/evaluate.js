@@ -4,7 +4,6 @@ import {getEvaluationData} from "../../utils/hellosleep"
 const app = getApp()
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -27,6 +26,7 @@ Page({
           groups: this.survey.groups,
           answers: this.survey.answers,
           availables: Array.from(this.survey.availables),
+          canEvaluate: this.survey.canEvaluate()
         })
       }
     })

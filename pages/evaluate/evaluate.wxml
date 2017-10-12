@@ -35,6 +35,15 @@
     }
   }
 
+  var range = function(min, max, step) {
+    step = step || 1;
+    var r = [];
+    for (var n = min; n <= max; n += step) {
+      r.push(n)
+    }
+    return r;
+  }
+
   var stringOf = function(obj) {
     return JSON.stringify(obj)
   }
@@ -48,18 +57,19 @@
     getTemplate4Multiple: getTemplate4Multiple,
     getOptionText: getOptionText,
     isQuestionAvailable: isQuestionAvailable,
-    stringOf: stringOf
+    stringOf: stringOf,
+    range: range
   }
 </wxs>
 
 <template name="singleSelect">
   <view class="weui-cell weui-cell_input">
-    <view class="weui-cell__hd">
+    <view class="weui-cell__bd">
       <view class="weui-label">{{text}}</view>
     </view>
-    <view class="weui-cell__bd">
+    <view class="weui-cell__ft">
       <picker range="{{data}}" range-key="text" value="{{value}}" data-name="{{name}}" data-options="{{data}}" bindchange='onSelectChange'>
-        <view class="weui-input">{{self.getOptionText(data, value)}}</view>
+        <view class="weui-input">{{self.getOptionText(data, value) || '点击选择'}}</view>
       </picker>
     </view>
   </view>
@@ -67,12 +77,12 @@
 
 <template name="singleDate">
   <view class="weui-cell weui-cell_input">
-    <view class="weui-cell__hd">
+    <view class="weui-cell__bd">
       <view class="weui-label">{{text}}</view>
     </view>
-    <view class="weui-cell__bd">
+    <view class="weui-cell__ft">
       <picker mode="date" value="1980-01-01" data-name="{{name}}" bindchange='onValueChange'>
-        <view class="weui-input">{{value}}</view>
+        <view class="weui-input">{{value || '点击选择'}}</view>
       </picker>
     </view>
   </view>
@@ -86,49 +96,36 @@
   </view>
 </template>
 
-
 <template name="multipleSelect">
-  <view class="weui-cells">
-    <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
-      <view class="weui-cell__bd">{{text}}</view>
-      <view class="weui-cell__ft">{{self.getOptionText(data, value)}} {{options.unit}}</view>
-    </view>
-    <radio-group bindchange="onValueChange" data-name="{{name}}" hidden="{{!(value == undefined || showOptions[name])}}">
-      <label class="weui-cell weui-check__label" wx:for="{{data}}" wx:key="id">
-        <radio value="{{item.value}}" checked="{{value == item.value}}" />
-        <view class="weui-cell__bd">{{item.text}}</view>
-      </label>
-    </radio-group>
+  <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
+    <view class="weui-cell__bd">{{text}}</view>
+    <view class="weui-cell__ft">{{self.getOptionText(data, value)}} {{options.unit}}</view>
   </view>
+  <radio-group bindchange="onValueChange" data-name="{{name}}" hidden="{{!(value == undefined || showOptions[name])}}">
+    <label class="weui-cell weui-check__label" wx:for="{{data}}" wx:key="id">
+      <radio value="{{item.value}}" checked="{{value == item.value}}" />
+      <view class="weui-cell__bd">{{item.text}}</view>
+    </label>
+  </radio-group>
 </template>
 
 <template name="multipleTime">
-  <view class="weui-cells">
-    <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
-      <view class="weui-cell__bd">{{text}}</view>
-      <view class="weui-cell__ft">{{value}}</view>
-    </view>
-    <view class="weui-cell" hidden="{{!(value == undefined || showOptions[name])}}">
-      <view class="weui-cell__bd">
-        <picker mode="time" value="{{value}}" data-name="{{name}}" bindchange='onValueChange'>
-          <view class="weui-input">{{value}}</view>
-        </picker>
-      </view>
-    </view>
+  <view class="weui-cell">
+    <view class="weui-cell__bd">{{text}}</view>
+    <picker mode="time" value="{{value}}" data-name="{{name}}" bindchange='onValueChange'>
+      <view class="weui-cell__ft">{{value || '点击选择'}}</view>
+    </picker>
   </view>
 </template>
 
 <template name="multipleRange">
-  <view class="weui-cells">
-    <view class="weui-cell" data-name="{{name}}" bindtap='onToggleOptions'>
-      <view class="weui-cell__bd">{{text}}</view>
-      <view class="weui-cell__ft">{{value}} {{options.unit}}</view>
-    </view>
-    <view class="weui-cell" hidden="{{!(value == undefined || showOptions[name])}}">
-      <view class="weui-cell__bd">
-        <slider bindchange="onValueChange" data-name="{{name}}" min="{{options.min}}" max="{{options.max}}" show-value='true' value="{{value}}"></slider>
-      </view>
-    </view>
+  <view class="weui-cell">
+    <view class="weui-cell__bd">{{text}}</view>
+    <picker range="{{self.range(options.min, options.max, options.step)}}" value="{{value}}" data-name="{{name}}" data-offset="{{options.min}}" bindchange='onValueChange'>
+      <view class="weui-cell__ft">{{value || '点击选择'}}</view>
+    </picker>
+
+    <!-- <slider bindchange="onValueChange" data-name="{{name}}" min="{{options.min}}" max="{{options.max}}" show-value='true' value="{{value}}"></slider> -->
   </view>
 </template>
 
@@ -141,14 +138,20 @@
 
 <template name="multiple">
   <view class="weui-cells__title">{{group.text}}</view>
-  <template wx:for="{{group.data}}" wx:key="id" is="{{self.getTemplate4Multiple(item)}}" data="{{...item, showOptions, value: answers[item.name]}}" wx:if="{{self.isQuestionAvailable(availables, item.name)}}" />
+  <view class="weui-cells weui-cells_after-title">
+    <template wx:for="{{group.data}}" wx:key="id" is="{{self.getTemplate4Multiple(item)}}" data="{{...item, showOptions, value: answers[item.name]}}" wx:if="{{self.isQuestionAvailable(availables, item.name)}}" />
+  </view>
 </template>
 
-<view class="_container">
-  <block wx:for="{{groups}}" wx:key="id">
-    <template is="{{item.page}}" data="{{group:item, answers, availables, showOptions}}" />
-  </block>
-  <view class="fixed-bottom-area">
-    <button class="weui-btn action-btn" type="primary" bindtap="onSubmit" disabled='{{!canEvaluate}}'>提交</button>
+<view class='container'>
+  <scroll-view class="main-box" scroll-y='true'>
+    <block wx:for="{{groups}}" wx:key="id">
+      <template is="{{item.page}}" data="{{group:item, answers, availables, showOptions}}" />
+    </block>
+  </scroll-view>
+  <view class="bottom-box">
+    <view class="actions">
+      <button class="weui-btn action-btn" type="primary" bindtap="onSubmit" disabled='{{!canEvaluate}}'>提交</button>
+    </view>
   </view>
 </view>
