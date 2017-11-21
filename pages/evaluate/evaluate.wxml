@@ -101,7 +101,9 @@
     <view class="weui-cell__bd">{{text}}</view>
     <view class="weui-cell__ft">{{self.getOptionText(data, value)}} {{options.unit}}</view>
   </view>
-  <radio-group bindchange="onValueChange" data-name="{{name}}" hidden="{{!(value == undefined || showOptions[name])}}">
+  <radio-group bindchange="onValueChange" data-name="{{name}}" 
+               hidden="{{!(value == undefined || showOptions[name])}}" 
+               class="weui-animate-fade-{{(value == undefined || showOptions[name]) ? 'in' : 'out'}}">
     <label class="weui-cell weui-check__label" wx:for="{{data}}" wx:key="id">
       <radio value="{{item.value}}" checked="{{value == item.value}}" />
       <view class="weui-cell__bd">{{item.text}}</view>
@@ -111,18 +113,22 @@
 
 <template name="multipleTime">
   <view class="weui-cell">
-    <view class="weui-cell__bd">{{text}}</view>
-    <picker mode="time" value="{{value}}" data-name="{{name}}" bindchange='onValueChange'>
+    <picker class="weui-flex__item" mode="time" value="{{value}}" data-name="{{name}}" bindchange='onValueChange'>
+      <label class="weui-flex">
+      <view class="weui-cell__bd">{{text}}</view>
       <view class="weui-cell__ft">{{value || '点击选择'}}</view>
+      </label>
     </picker>
   </view>
 </template>
 
 <template name="multipleRange">
   <view class="weui-cell">
-    <view class="weui-cell__bd">{{text}}</view>
-    <picker range="{{self.range(options.min, options.max, options.step)}}" value="{{value}}" data-name="{{name}}" data-offset="{{options.min}}" bindchange='onValueChange'>
-      <view class="weui-cell__ft">{{value || '点击选择'}}</view>
+    <picker class="weui-flex__item" range="{{self.range(options.min, options.max, options.step)}}" value="{{value}}" data-name="{{name}}" data-offset="{{options.min}}" bindchange='onValueChange'>
+      <label class="weui-flex">
+      <view class="weui-cell__bd">{{text}}</view>
+      <view class="weui-cell__ft">{{value || '点击选择'}}{{value && options.unit}}</view>
+      </label>
     </picker>
 
     <!-- <slider bindchange="onValueChange" data-name="{{name}}" min="{{options.min}}" max="{{options.max}}" show-value='true' value="{{value}}"></slider> -->
@@ -139,7 +145,7 @@
 <template name="multiple">
   <view class="weui-cells__title">{{group.text}}</view>
   <view class="weui-cells weui-cells_after-title">
-    <template wx:for="{{group.data}}" wx:key="id" is="{{self.getTemplate4Multiple(item)}}" data="{{...item, showOptions, value: answers[item.name]}}" wx:if="{{self.isQuestionAvailable(availables, item.name)}}" />
+    <template wx:for="{{group.data}}" wx:key="id" is="{{self.getTemplate4Multiple(item)}}" data="{{...item, showOptions, value: answers[item.name]}}" wx:if="{{self.isQuestionAvailable(availables, item.name)}}"/>
   </view>
 </template>
 
