@@ -2,8 +2,6 @@
   "pages":[
     "pages/index/index",
     "pages/evaluate/evaluate",
-    "pages/report/report",
-    "pages/logs/logs"
   ],
   "window":{
     "backgroundTextStyle":"light",
