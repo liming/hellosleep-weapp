@@ -1,5 +1,7 @@
 // pages/evaluate/evaluate.js
-import {getEvaluationData} from "../../utils/hellosleep"
+import { getEvaluationData } from "../../utils/hellosleep"
+import { Report } from '../../utils/survey'
+
 
 const app = getApp()
 
@@ -110,8 +112,14 @@ Page({
   },
 
   onSubmit: function () {
+    const survey = app.globalData.survey
+    if (survey) {
+      let report = new Report(app.globalData.survey)
+      report.calculateTags()
+      app.globalData.report = report
+    }
     wx.navigateTo({
-      url: '../report/report',
+      url: '../index/index',
     })
   },
 

@@ -1,16 +1,9 @@
 /**index.wxss**/
 
-.main-content {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .user-info {
   width: 100%;
-  flex: 0 0 300rpx;
+  height: 300rpx;
+  flex: 1 0 300rpx;
 
   display: flex;
   flex-direction: column;
@@ -20,19 +13,6 @@
   background-color: dimgrey;
   font-size: 10pt;
   color: white;
-}
-
-.user-report {
-  width: 100%;
-  flex: 1 1 auto;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center;
-
-  font-size: 16pt;
-
 }
 
 .user-info-avatar {

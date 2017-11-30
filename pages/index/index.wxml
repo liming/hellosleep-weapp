@@ -1,22 +1,28 @@
 <!--index.wxml-->
 <view class="container">
-  <view class="main-box main-content">
+  <scroll-view class="main-box" scroll-y='true'>
     <view class="user-info">
       <image class="user-info-avatar" src="{{user.info.avatarUrl}}" background-size="cover"></image>
       <text class="user-info-nickname">{{user.info.nickName}}, 您好</text>
     </view>
-    <view class="user-report">
       <block wx:if="{{report}}">
-        <text class="report-title">您的评估结果: </text>
-        <view class="report-tags" wx:for="{{report.tags}}" wx:key="id">
-          <label>{{item.text}}</label>
+        <view class="weui-panel__hd">您的评估结果</view>
+        <view class="weui-panel__bd">
+          <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active" wx:for="{{report.tags}}" wx:key="id">
+            <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+              <text>图标</text><image class="weui-media-box__thumb"/>
+            </view>
+            <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__title">{{item.text}}</view>
+              <view class="weui-media-box__desc">此处有描述</view>
+            </view>
+          </navigator>
         </view>
       </block>
       <block wx:else>
         <text class="report-title">您还没有做过评估</text>
       </block>
-    </view>
-  </view>
+  </scroll-view>
   <view class="bottom-box">
     <view class="actions">
       <button class="evaluate" type="primary" bindtap="goEvaluate">

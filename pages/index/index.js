@@ -2,6 +2,15 @@
 //获取应用实例
 const app = getApp()
 
+const mockReport = {
+  survey: null,
+  tags: [
+    { text: ' tag1' },
+    { text: ' tag1' },
+    { text: ' tag1' }
+  ]
+}
+
 Page({
   data: {
     user: null,
@@ -20,12 +29,13 @@ Page({
         this.setData({user: user})
       }
     })
+    // this.setData({ report: mockReport })
   },
 
   onShow: function() {
     app.getReport({
       success: (report) => {
-        this.setData({report: report})
+        this.setData({ report: report})
       }
     })
   }
